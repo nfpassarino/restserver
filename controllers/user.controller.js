@@ -1,22 +1,46 @@
 const { request, response } = require('express');
 
-const userGet = (req, res) => {
-    const query = req.query;
-    res.status(401).json();
+const bcryptjs = require('bcryptjs');
+const User = require('../models/user');
+
+const userGet = async (req, res) => {
+    const { offset = 0, limit = 10 } = req.query;
+    const userActiveQuery = { isActive: true };
+    const [total, users] = await Promise.all([
+        User.countDocuments(userActiveQuery),
+        User.find(userActiveQuery).skip(Number(offset)).limit(Number(limit)),
+    ]);
+    res.status(200).json({
+        total,
+        users,
+    });
 };
 
-const userPut = (req, res) => {
-    const id = req.params.id;
-    res.status(200).json();
+const userPost = async (req, res) => {
+    const { name, mail, password, role } = req.body;
+    const user = new User({ name, mail, password, role });
+    const salt = bcryptjs.genSaltSync();
+    user.password = bcryptjs.hashSync(password, salt);
+    await user.save();
+    res.status(200).json(user);
 };
 
-const userPost = (req, res) => {
-    const body = req.body;
-    res.status(200).json();
+const userPut = async (req, res) => {
+    const { id } = req.params;
+    const { _id, password, google, mail, ...data } = req.body;
+    if (password) {
+        const salt = bcryptjs.genSaltSync();
+        data.password = bcryptjs.hashSync(password, salt);
+    }
+    const user = await User.findByIdAndUpdate(id, data);
+    res.status(200).json(user);
 };
 
-const userDelete = (req, res) => {
-    res.status(401).json();
+const userDelete = async (req, res) => {
+    const { id } = req.params;
+    const userInactiveQuery = { isActive: false };
+    const user = await User.findByIdAndUpdate(id, userInactiveQuery);
+    res.status(200).json(user);
 };
 
 module.exports = {
