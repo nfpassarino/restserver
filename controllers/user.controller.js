@@ -1,5 +1,3 @@
-const { request, response } = require('express');
-
 const bcryptjs = require('bcryptjs');
 const User = require('../models/user');
 
@@ -17,8 +15,8 @@ const userGet = async (req, res) => {
 };
 
 const userPost = async (req, res) => {
-    const { name, mail, password, role } = req.body;
-    const user = new User({ name, mail, password, role });
+    const { name, email, password, role } = req.body;
+    const user = new User({ name, email, password, role });
     const salt = bcryptjs.genSaltSync();
     user.password = bcryptjs.hashSync(password, salt);
     await user.save();
@@ -27,7 +25,7 @@ const userPost = async (req, res) => {
 
 const userPut = async (req, res) => {
     const { id } = req.params;
-    const { _id, password, google, mail, ...data } = req.body;
+    const { _id, password, google, email, ...data } = req.body;
     if (password) {
         const salt = bcryptjs.genSaltSync();
         data.password = bcryptjs.hashSync(password, salt);
@@ -40,7 +38,8 @@ const userDelete = async (req, res) => {
     const { id } = req.params;
     const userInactiveQuery = { isActive: false };
     const user = await User.findByIdAndUpdate(id, userInactiveQuery);
-    res.status(200).json(user);
+    const authUser = req.authUser;
+    res.status(200).json({ user, authUser });
 };
 
 module.exports = {

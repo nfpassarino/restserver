@@ -9,10 +9,10 @@ const isValidRole = async (role = '') => {
         );
 };
 
-const isValidMail = async (mail = '') => {
-    const isUsedMail = await User.findOne({ mail });
-    if (isUsedMail)
-        throw new Error(`El correo ${mail} ya se encuentra registrado`);
+const isValidEmail = async (email = '') => {
+    const isUsedEmail = await User.findOne({ email });
+    if (isUsedEmail)
+        throw new Error(`El correo ${email} ya se encuentra registrado`);
 };
 
 const isValidId = async (id = '') => {
@@ -22,6 +22,6 @@ const isValidId = async (id = '') => {
 
 module.exports = {
     isValidRole,
-    isValidMail,
+    isValidEmail,
     isValidId,
 };

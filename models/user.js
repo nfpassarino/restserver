@@ -5,7 +5,7 @@ const userSchema = Schema({
         type: String,
         required: [true, 'Nombre requerido'],
     },
-    mail: {
+    email: {
         type: String,
         required: [true, 'Email requerido'],
         unique: true,
@@ -33,7 +33,8 @@ const userSchema = Schema({
 });
 
 userSchema.methods.toJSON = function () {
-    const { __v, password, ...user } = this.toObject();
+    const { __v, password, _id, ...user } = this.toObject();
+    user.uid = _id;
     return user;
 };
 
