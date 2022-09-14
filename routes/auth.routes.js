@@ -1,14 +1,14 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { login, googleSignIn } = require('../controllers/auth.controller');
 const { validateFields } = require('../middlewares/validateFields');
+const { login, googleSignIn } = require('../controllers/auth.controller');
 
 const router = Router();
 
 router.post(
     '/login',
     [
-        check('mail', 'Correo no válido').isEmail(),
+        check('email', 'Correo no válido').isEmail(),
         check('password', 'Contraseña obligatoria').not().isEmpty(),
         check('password', 'Debe tener más de 6 caracteres').isLength({
             min: 6,

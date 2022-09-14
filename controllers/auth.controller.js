@@ -1,6 +1,6 @@
 const generateJWT = require('../helpers/generateJWT');
 const bcryptjs = require('bcryptjs');
-const User = require('../models/user');
+const { User } = require('../models');
 const { verifyGoogleToken } = require('../helpers/verifyGoogleToken');
 
 const login = async (req, res) => {

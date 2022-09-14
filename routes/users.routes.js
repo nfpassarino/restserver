@@ -6,53 +6,53 @@ const {
     hasRole,
 } = require('../middlewares/index');
 const {
-    userGet,
-    userPut,
-    userPost,
-    userDelete,
-} = require('../controllers/user.controller');
+    getUsers,
+    updateUser,
+    createUser,
+    deleteUser,
+} = require('../controllers/users.controller');
 
 const {
     isValidRole,
-    isValidEmail,
-    isValidId,
+    isValidUserEmail,
+    isValidUserId,
 } = require('../database/validators');
 
 const router = Router();
 
-router.get('/', userGet);
+router.get('/', getUsers);
 router.post(
     '/',
     [
         check('name', 'Nombre obligatorio').not().isEmpty(),
         check('password', 'Contraseña obligatoria').not().isEmpty(),
         check('password', 'Debe tener más de 6 letras').isLength({ min: 6 }),
-        check('email', 'Email no válido').isEmail().custom(isValidEmail),
+        check('email', 'Email no válido').isEmail().custom(isValidUserEmail),
         //check('role', 'Rol inválido').isIn('ADMIN_ROLE', 'USER_ROLE'),
         check('role').custom(isValidRole),
         validateFields,
     ],
-    userPost
+    createUser
 );
 router.put(
     '/:id',
     [
-        check('id', 'ID no válido').isMongoId().custom(isValidId),
+        check('id', 'ID no válido').isMongoId().custom(isValidUserId),
         check('password', 'Debe tener más de 6 letras').isLength({ min: 6 }),
         check('role').custom(isValidRole),
         validateFields,
     ],
-    userPut
+    updateUser
 );
 router.delete(
     '/:id',
     [
         validateJWT,
         hasRole('ADMIN_ROLE'),
-        check('id', 'ID no válido').isMongoId().custom(isValidId),
+        check('id', 'ID no válido').isMongoId().custom(isValidUserId),
         validateFields,
     ],
-    userDelete
+    deleteUser
 );
 
 module.exports = router;
